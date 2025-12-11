@@ -193,7 +193,7 @@ export default async function VideoPage({ params }: PageProps) {
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-4">Похожие видео</h3>
                   <div className="space-y-4">
-                    {relatedVideos.map((relatedVideo) => (
+                    {relatedVideos.map((relatedVideo: any) => (
                       <Link
                         key={relatedVideo.id}
                         href={`/videos/${relatedVideo.id}`}

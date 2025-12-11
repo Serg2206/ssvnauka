@@ -298,7 +298,7 @@ function CommentCard({ comment, videoId }: { comment: Comment; videoId: string }
                   onChange={(e) => setReplyUserName(e.target.value)}
                   required
                   disabled={submitting}
-                  size="sm"
+                  className="h-9"
                 />
                 <Textarea
                   placeholder="Напишите ответ..."

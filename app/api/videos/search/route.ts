@@ -63,14 +63,14 @@ export async function GET(request: NextRequest) {
 
     // Для каждого видео получить средний рейтинг
     const videosWithRatings = await Promise.all(
-      videos.map(async (video) => {
+      videos.map(async (video: any) => {
         const ratings = await prisma.rating.findMany({
           where: { videoId: video.id },
           select: { rating: true }
         })
 
         const averageRating = ratings.length > 0
-          ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
+          ? ratings.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / ratings.length
           : 0
 
         return {

@@ -28,11 +28,11 @@ export async function GET(
     }
 
     // Вычислить средний рейтинг
-    const sum = ratings.reduce((acc, r) => acc + r.rating, 0)
+    const sum = ratings.reduce((acc: number, r: { rating: number }) => acc + r.rating, 0)
     const average = sum / ratings.length
 
     // Вычислить распределение
-    const distribution = ratings.reduce((acc, r) => {
+    const distribution = ratings.reduce((acc: { 5: number; 4: number; 3: number; 2: number; 1: number }, r: { rating: number }) => {
       acc[r.rating as keyof typeof acc]++
       return acc
     }, { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 })
