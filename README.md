@@ -1,3 +1,8 @@
+## Archived
+Этот репозиторий архивирован. Контент и функционал перенесены в [surgical-research-platform-mvp](https://github.com/Serg2206/surgical-research-platform-mvp) и [ssvnauka.com](https://github.com/Serg2206/ssvnauka.com).
+
+---
+
 
 # SSVproff - Хирургическая образовательная платформа
 
