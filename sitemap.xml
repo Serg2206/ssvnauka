@@ -101,4 +101,39 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <url>
+    <loc>https://ssvnauka.com/articles/gastric-cancer-symptoms-kharkov.html</loc>
+    <lastmod>2026-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ssvnauka.com/articles/inguinal-hernia-kharkov.html</loc>
+    <lastmod>2026-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ssvnauka.com/articles/ovarian-cyst-kharkov.html</loc>
+    <lastmod>2026-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ssvnauka.com/articles/preoperative-preparation-kharkov.html</loc>
+    <lastmod>2026-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://ssvnauka.com/articles/postoperative-recovery-laparoscopy.html</loc>
+    <lastmod>2026-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>
