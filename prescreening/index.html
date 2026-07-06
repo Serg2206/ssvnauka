@@ -93,20 +93,20 @@ function renderEntry(app){
     <button class="opt" id="branchPatient"><strong>Я пациент</strong><br><span style="color:var(--ink-soft);font-size:13.5px;">Есть жалобы или планирую лечение/операцию</span></button>
     <button class="opt" id="branchExpert"><strong>Я врач / исследователь / учреждение</strong><br><span style="color:var(--ink-soft);font-size:13.5px;">Второе мнение, рецензирование, медтуризм, сотрудничество, AI</span></button>
   </div>${svgECG}`;
-  document.getElementById('branchPatient').addEventListener('click', ()=>{ state.branch='patient'; state.step=0; render(); });
-  document.getElementById('branchExpert').addEventListener('click', ()=>{ state.branch='expert'; render(); });
+  document.getElementById('branchPatient').addEventListener('click', ()=>{ gtagEvent('prescreening_branch',{branch:'patient'}); state.branch='patient'; state.step=0; render(); });
+  document.getElementById('branchExpert').addEventListener('click', ()=>{ gtagEvent('prescreening_branch',{branch:'expert'}); state.branch='expert'; render(); });
 }
 
 function renderExpertMenu(app){
   app.innerHTML = `<button class="back" id="toEntry" style="margin-bottom:14px;">← Назад</button><h2 class="q">Экспертные услуги профессора Сушкова</h2><div class="options">${expertOptions.map(o=>`<button class="opt" data-key="${o.key}"><span style="font-size:18px;">${o.icon}</span> <strong>${o.title}</strong><br><span style="color:var(--ink-soft);font-size:13px;">${o.who}</span></button>`).join('')}</div>${svgECG}`;
   document.getElementById('toEntry').addEventListener('click', ()=>{ state.branch=null; render(); });
-  app.querySelectorAll('.opt[data-key]').forEach(btn=>{ btn.addEventListener('click', ()=>{ state.expertChoice=btn.dataset.key; render(); }); });
+  app.querySelectorAll('.opt[data-key]').forEach(btn=>{ btn.addEventListener('click', ()=>{ gtagEvent('prescreening_expert_choice',{service:btn.dataset.key}); state.expertChoice=btn.dataset.key; render(); }); });
 }
 
 function renderExpertResult(app){
   const o = expertOptions.find(x=>x.key===state.expertChoice);
   app.innerHTML = `<span class="badge routine">${o.who}</span><h2 class="result-title">${o.icon} ${o.title}</h2><p class="result-text">${o.text}</p>${svgECG}<div class="price-row"><span class="label">${o.format}</span></div>
-    <a class="cta primary" href="mailto:ssvproff@gmail.com?subject=${encodeURIComponent(o.title)}">Написать на email</a>
+    <a class="cta primary" href="mailto:ssvproff@gmail.com" onclick="gtagEvent('click_cta_email',{source:'prescreening_expert'})"?subject=${encodeURIComponent(o.title)}">Написать на email</a>
     <a class="cta secondary" href="https://t.me/SSVproff_medical_bot" target="_blank">Telegram-бот</a>
     <a class="cta secondary" href="https://ssvnauka.com/expert/" target="_blank">Подробнее на сайте</a>
     <div class="disclaimer">Ответ в течение 24 часов. Формат работы (очно / онлайн / заочно) согласуется индивидуально.</div>
@@ -143,7 +143,7 @@ function render(){
     app.innerHTML = `<div class="progress">${questions.map((_,i)=>`<span class="${i<=state.step?'done':''}"></span>`).join('')}</div><div class="step-label">${q.label}</div><h2 class="q">${q.q}</h2><div class="options">${q.options.map(o=>`<button class="opt" data-key="${q.key}" data-value="${o.value}">${o.text}</button>`).join('')}</div>${svgECG}<button class="back" id="backBtn">← Назад</button>`;
     app.querySelectorAll('.opt').forEach(btn=>{ btn.addEventListener('click', ()=>{ state.answers[btn.dataset.key]=btn.dataset.value; state.step++; render(); }); });
     document.getElementById('backBtn').addEventListener('click', ()=>{ if(state.step>0){state.step--;}else{state.branch=null;state.answers={};} render(); });
-  } else { renderResult(app); }
+  } else { gtagEvent('prescreening_result',{urgency:assessUrgency(),concern:state.answers.concern}); renderResult(app); }
 }
 
 function assessUrgency(){
@@ -166,14 +166,19 @@ function renderResult(app){
   const docsNote = docs==="none" ? " Возьмите с собой (или на онлайн-консультацию) любые имеющиеся медицинские документы — при их отсутствии врач определит, какие обследования нужны." : " Возьмите результаты обследований с собой — это ускорит консультацию.";
   const r = urgencyMap[urgency];
   app.innerHTML = `<span class="badge ${r.cls}">${r.badge}</span><h2 class="result-title">Рекомендация по ${concernLabel}</h2><p class="result-text">${r.text}${docsNote}</p>${svgECG}<div class="price-row"><span class="amount">2000 ₴</span><span class="label">стоимость консультации (~$50), 40+ лет опыта, доктор мед. наук</span></div>
-    <a class="cta primary" href="https://t.me/SSVPROFF_MEDICAL" target="_blank">Записаться через Telegram-бот</a>
-    <a class="cta secondary" href="tel:+380675707949">Позвонить: +380 67 570 79 49</a>
+    <a class="cta primary" href="https://t.me/SSVPROFF_MEDICAL" onclick="gtagEvent('click_cta_telegram',{source:'prescreening_result'})" target="_blank">Записаться через Telegram-бот</a>
+    <a class="cta secondary" href="tel:+380675707949" onclick="gtagEvent('click_cta_phone',{source:'prescreening_result'})">Позвонить: +380 67 570 79 49</a>
     <a class="cta secondary" href="https://ssvnauka.com" target="_blank">Записаться на сайте ssvnauka.com</a>
     <div class="disclaimer">Это предварительная оценка срочности, а не диагноз. Окончательное решение принимается врачом на консультации.</div>
     <button class="restart" id="restartBtn">Пройти заново</button>`;
-  document.getElementById('restartBtn').addEventListener('click', ()=>{ state.branch=null; state.step=0; state.answers={}; render(); });
+  document.getElementById('restartBtn').addEventListener('click', ()=>{ gtagEvent('prescreening_restart'); state.branch=null; state.step=0; state.answers={}; render(); });
 }
 render();
+</script>
+<script>
+function gtagEvent(name, params){
+  if(typeof gtag === 'function'){ gtag('event', name, params || {}); }
+}
 </script>
 </body>
 </html>
