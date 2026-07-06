@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Play, ArrowRight, Users, Video, Award } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import Link from 'next/link'
 
 const stats = [
   { label: 'Видеоуроков', value: '700+', icon: Video },
@@ -95,6 +96,22 @@ export function HeroSection() {
                   Узнать больше
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
+              </motion.div>
+
+              <motion.div 
+                className="pt-1"
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.8, delay: 0.7 }}
+              >
+                <Link 
+                  href="/prescreening"
+                  className="inline-flex items-center text-sm text-amber-300 hover:text-amber-200 underline underline-offset-4 transition-colors"
+                >
+                  <span className="mr-2">🩺</span>
+                  Не уверены, что вам нужно? Пройдите быстрый тест — 30 секунд
+                  <ArrowRight className="w-4 h-4 ml-1" />
+                </Link>
               </motion.div>
             </div>
 
