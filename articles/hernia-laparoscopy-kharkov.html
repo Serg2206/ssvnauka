@@ -130,7 +130,7 @@
 
         <div class="article-cta">
           <h3 style="color: #fff; margin-bottom: 16px;">Запишитесь на консультацию</h3>
-          <p>📞 <a href="tel:+380675707949">+380 67 570 79 49</a></p>
+          <p>📞 <a href="tel:+380675707949" onclick="gtagEvent(\'click_cta_phone\',{page:\'hernia\'})\">+380 67 570 79 49</a></p>
           <p style="margin-top: 8px;">🤖 <a href="https://t.me/maria_surgical_ai_bot">Telegram-бот @maria_surgical_ai_bot</a></p>
           <p style="margin-top: 8px; font-size: 0.9rem; opacity: 0.8;">ул. Сирохинская, 7-Б, Харьков</p>
         </div>
@@ -163,5 +163,10 @@
       </div>
     </div>
   </section>
+<script>
+function gtagEvent(name, params){
+  if(typeof gtag === 'function'){ gtag('event', name, params || {}); }
+}
+</script>
 </body>
 </html>
