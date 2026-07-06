@@ -85,8 +85,8 @@
 
   <div class="cta-box">
     <h3 style="color:#fff;margin-bottom:16px;">Свяжитесь для обсуждения</h3>
-    <p>📧 <a href="mailto:ssvproff@gmail.com">ssvproff@gmail.com</a></p>
-    <p style="margin-top:8px;">📞 <a href="tel:+380675707949">+380 67 570 79 49</a></p>
+    <p>📧 <a href="mailto:ssvproff@gmail.com" onclick="gtagEvent(\'click_cta_email\',{page:\'expert\'})\">ssvproff@gmail.com</a></p>
+    <p style="margin-top:8px;">📞 <a href="tel:+380675707949" onclick="gtagEvent(\'click_cta_phone\',{page:\'expert\'})\">+380 67 570 79 49</a></p>
     <p style="margin-top:8px;">🤖 <a href="https://t.me/SSVproff_medical_bot">Telegram-бот</a></p>
   </div>
 
@@ -97,5 +97,10 @@
     <a href="https://proffssv.site" target="_blank">proffssv.site</a>
   </div>
 </div>
+<script>
+function gtagEvent(name, params){
+  if(typeof gtag === 'function'){ gtag('event', name, params || {}); }
+}
+</script>
 </body>
 </html>
