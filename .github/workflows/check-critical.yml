@@ -1,0 +1,38 @@
+name: Check Critical Assets
+
+on:
+  pull_request:
+    branches: [gh-pages]
+  push:
+    branches: [gh-pages]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check GA4 tracking
+        run: |
+          grep -q "gtag\|G-" index.html || (echo "::error::GA4 tracking missing on index.html!" && exit 1)
+          echo "✅ GA4 tracking present"
+
+      - name: Check AdSense
+        run: |
+          grep -q "ca-pub-1428611006597338" index.html || (echo "::error::AdSense missing on index.html!" && exit 1)
+          echo "✅ AdSense present"
+
+      - name: Check .nojekyll
+        run: |
+          test -f .nojekyll || (echo "::error::.nojekyll missing!" && exit 1)
+          echo "✅ .nojekyll present"
+
+      - name: Check prescreening quiz exists
+        run: |
+          test -f prescreening/index.html || (echo "::error::prescreening/index.html missing!" && exit 1)
+          echo "✅ prescreening quiz present"
+
+      - name: Check expert page exists
+        run: |
+          test -f expert/index.html || (echo "::error::expert/index.html missing!" && exit 1)
+          echo "✅ expert page present"
