@@ -1,8 +1,6 @@
 {
+  "version": 2,
   "buildCommand": "prisma generate && npm run build",
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "env": {
-    "DATABASE_URL": "@database_url"
-  }
+  "regions": ["iad1"]
 }
