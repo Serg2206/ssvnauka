@@ -5,302 +5,348 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertTriangle, Copy, Loader2 } from 'lucide-react'
+import { AlertTriangle, Copy, Loader2, Database, BookOpen, Award, TrendingUp } from 'lucide-react'
+import { histoDatabase, HistoDiagnosis } from '@/lib/histo-database'
 
-interface HistoCase {
-  id: string
-  name: string
-  icon: string
-  description: string
-  original: string
-  result: string
-}
-
-const cases: HistoCase[] = [
-  {
-    id: 'stomach',
-    name: 'Аденокарцинома желудка',
-    icon: '🔴',
-    description: 'Умеренная дифференцировка, G2, pT3N2M0',
-    original: 'Аденокарцинома желудка, G2, pT3N2M0, края резекции R0',
-    result: `
-      <h4 class="font-bold mt-4 mb-2">Основные находки:</h4>
-      <ul class="list-disc list-inside space-y-1 mb-4">
-        <li>Тип опухоли: Аденокарцинома желудка</li>
-        <li>Степень дифференцировки: G2 (умеренная)</li>
-        <li>Глубина вторжения: pT3 (через все слои)</li>
-        <li>Поражение лимфоузлов: N2 (4-9 узлов)</li>
-        <li>Метастазы: M0 (отсутствуют)</li>
-      </ul>
-
-      <h4 class="font-bold mt-4 mb-2">Диагноз простыми словами:</h4>
-      <p class="mb-4">Выявлена злокачественная опухоль желудка средней степени агрессивности. Опухоль прошла через все слои стенки желудка и распространилась на региональные лимфоузлы. Отдалённых метастазов не обнаружено.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Прогноз и стадия:</h4>
-      <p class="mb-4"><strong>Стадия IIIA:</strong> местно-распространённый рак желудка. 5-летняя выживаемость без лечения 15-20%, с адъювантной химиотерапией 50-60%.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Лечебные последствия:</h4>
-      <p class="mb-4">Требуется системная химиотерапия (схема платина + фторурацил). Может быть показана неоадъювантная химиотерапия перед операцией.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Наблюдение и мониторинг:</h4>
-      <p>КТ контроль каждые 3-6 месяцев, маркёры опухоли (CEA, CA 19-9), эндоскопия через 6-12 месяцев.</p>
-    `
-  },
-  {
-    id: 'breast',
-    name: 'Рак молочной железы',
-    icon: '💗',
-    description: 'Люминальный A, ER+, HER2-, G1',
-    original: 'Инвазивная карцинома молочной железы, G1, pT2N1M0, ER+90%, PR+75%, HER2-, Ki-67 15%',
-    result: `
-      <h4 class="font-bold mt-4 mb-2">Основные находки:</h4>
-      <ul class="list-disc list-inside space-y-1 mb-4">
-        <li>Тип опухоли: Инвазивная карцинома молочной железы</li>
-        <li>Подтип: Люминальный A (гормон-чувствительный)</li>
-        <li>ER статус: положительный (ER+90%)</li>
-        <li>HER2 статус: отрицательный</li>
-        <li>Ki-67: 15% (низкая пролиферация)</li>
-      </ul>
-
-      <h4 class="font-bold mt-4 mb-2">Диагноз простыми словами:</h4>
-      <p class="mb-4">Рак молочной железы низкой степени агрессивности, гормон-чувствительный тип. Опухоль растёт медленно и хорошо отвечает на гормональную терапию.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Прогноз и стадия:</h4>
-      <p class="mb-4"><strong>Стадия IIA:</strong> ранний рак с благоприятным прогнозом. 5-летняя выживаемость 85-90% с гормональной терапией.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Лечебные последствия:</h4>
-      <p class="mb-4">Рекомендуется гормональная терапия (тамоксифен или ингибиторы ароматазы) на 5-10 лет. Может требоваться лучевая терапия.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Наблюдение:</h4>
-      <p>Клинический осмотр каждые 3-6 месяцев, маммография ежегодно.</p>
-    `
-  },
-  {
-    id: 'colon',
-    name: 'Рак толстой кишки',
-    icon: '🔵',
-    description: 'Стадия II, T4aN0M0, MSI отрицательна',
-    original: 'Аденокарцинома толстой кишки, G2, pT4aN0M0, края R0, MSI отрицательна',
-    result: `
-      <h4 class="font-bold mt-4 mb-2">Основные находки:</h4>
-      <ul class="list-disc list-inside space-y-1 mb-4">
-        <li>Локализация: Толстая кишка (ободочная кишка)</li>
-        <li>Тип опухоли: Аденокарцинома</li>
-        <li>Глубина вторжения: pT4a (прорастание в серозу)</li>
-        <li>Поражение лимфоузлов: N0 (не поражены)</li>
-        <li>Молекулярный статус: MSI отрицательна (стандартный риск)</li>
-      </ul>
-
-      <h4 class="font-bold mt-4 mb-2">Диагноз простыми словами:</h4>
-      <p class="mb-4">Рак толстой кишки с прорастанием через стенку кишечника. Лимфоузлы не поражены, что является благоприятным признаком.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Прогноз и стадия:</h4>
-      <p class="mb-4"><strong>Стадия II:</strong> местно-распространённый рак без поражения лимфоузлов. 5-летняя выживаемость 70-75% без лечения, 80-85% с адъювантной химиотерапией.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Лечебные последствия:</h4>
-      <p class="mb-4">Рекомендуется адъювантная химиотерапия (FOLFOX или другие схемы на основе оксалиплатина).</p>
-
-      <h4 class="font-bold mt-4 mb-2">Наблюдение:</h4>
-      <p>Уровень CEA каждые 3 месяца, КТ органов брюшной полости каждые 6 месяцев.</p>
-    `
-  },
-  {
-    id: 'melanoma',
-    name: 'Меланома',
-    icon: '🖤',
-    description: 'Промежуточный риск, глубина 3.2 мм',
-    original: 'Меланома кожи, Толщина по Бреслоу 3.2 мм, митозы 8/10 пл, изъязвление присутствует, S100+, HMB-45+, Ki-67 30%',
-    result: `
-      <h4 class="font-bold mt-4 mb-2">Основные находки:</h4>
-      <ul class="list-disc list-inside space-y-1 mb-4">
-        <li>Диагноз: Меланома кожи</li>
-        <li>Толщина по Бреслоу: 3.2 мм (промежуточно-высокий риск)</li>
-        <li>Митотический индекс: 8/10 полей зрения (высокий)</li>
-        <li>Изъязвление: присутствует (неблагоприятный фактор)</li>
-        <li>Ki-67: 30% (быстро растущая опухоль)</li>
-      </ul>
-
-      <h4 class="font-bold mt-4 mb-2">Диагноз простыми словами:</h4>
-      <p class="mb-4">Меланома с промежуточной/высокой степенью риска. Требуется расширенное обследование для исключения метастазов в лимфоузлы.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Прогноз и стадия:</h4>
-      <p class="mb-4"><strong>Стадия IIIA-IIIB:</strong> вероятное поражение региональных лимфоузлов. 5-летняя выживаемость 40-60%.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Лечебные последствия:</h4>
-      <p class="mb-4">Необходима сентинельная биопсия лимфоузла. При позитивных лимфоузлах показана адъювантная иммунотерапия.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Наблюдение:</h4>
-      <p>Клинический осмотр каждые 3 месяца, КТ каждые 3-6 месяцев, ПЭТ-КТ по показаниям.</p>
-    `
-  },
-  {
-    id: 'gist',
-    name: 'ГИСТ желудка',
-    icon: '⚪',
-    description: 'c-KIT+, CD34+, мутация KIT экзон 11',
-    original: 'Гастроинтестинальная стромальная опухоль (ГИСТ) желудка, 5х4 см, c-KIT (CD117)+, CD34+, мутация KIT экзон 11, митозы 3/50 пл',
-    result: `
-      <h4 class="font-bold mt-4 mb-2">Основные находки:</h4>
-      <ul class="list-disc list-inside space-y-1 mb-4">
-        <li>Локализация: Желудок</li>
-        <li>Диагноз: Гастроинтестинальная стромальная опухоль (ГИСТ)</li>
-        <li>Размер: 5х4 см (пограничный размер)</li>
-        <li>Ключевой маркер: c-KIT (CD117)+ (определяющий маркер)</li>
-        <li>Молекулярный тип: Мутация KIT экзон 11 (чувствительна к иматинибу)</li>
-      </ul>
-
-      <h4 class="font-bold mt-4 mb-2">Диагноз простыми словами:</h4>
-      <p class="mb-4">Редкая опухоль желудка с мутацией, чувствительной к целевому препарату иматиниб (Гливек).</p>
-
-      <h4 class="font-bold mt-4 mb-2">Прогноз и стадия:</h4>
-      <p class="mb-4"><strong>Промежуточный риск:</strong> с таргетной терапией прогноз значительно улучшается. 5-летняя выживаемость с иматинибом >90%.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Лечебные последствия:</h4>
-      <p class="mb-4">Хирургическое удаление опухоли + адъювантный иматиниб 3 года.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Наблюдение:</h4>
-      <p>КТ органов брюшной полости каждые 3-6 месяцев в течение 5 лет, контроль переносимости иматиниба.</p>
-    `
-  },
-  {
-    id: 'hodgkin',
-    name: 'Лимфома Ходжкина',
-    icon: '🟣',
-    description: 'Классическая, CD30+, EBV+',
-    original: 'Классическая лимфома Ходжкина, клетки Рида-Штернберга обнаружены, CD30+, CD15+, CD45-, CD3-, CD20-, EBER+',
-    result: `
-      <h4 class="font-bold mt-4 mb-2">Основные находки:</h4>
-      <ul class="list-disc list-inside space-y-1 mb-4">
-        <li>Диагноз: Классическая лимфома Ходжкина</li>
-        <li>Характерные клетки: Клетки Рида-Штернберга обнаружены</li>
-        <li>Иммунофенотип: CD30+, CD15+, CD45-, CD3-, CD20-</li>
-        <li>ЭБВ статус: EBER+ (вирус Эпштейна-Барр присутствует)</li>
-        <li>Фон: Реактивные T-клетки преобладают</li>
-      </ul>
-
-      <h4 class="font-bold mt-4 mb-2">Диагноз простыми словами:</h4>
-      <p class="mb-4">Лимфома Ходжкина классического типа. Это злокачественное заболевание лимфатической системы с лучшим прогнозом чем неходжкинские лимфомы.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Прогноз и стадия:</h4>
-      <p class="mb-4"><strong>Стадия определяется по распределению поражённых областей (I-IV):</strong> В развитых странах 5-летняя выживаемость >90%.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Лечебные последствия:</h4>
-      <p class="mb-4">Требуется полисхемотерапия (ABVD или современные PET-адаптированные схемы). Лучевая терапия в зависимости от стадии.</p>
-
-      <h4 class="font-bold mt-4 mb-2">Наблюдение:</h4>
-      <p>ПЭТ-КТ для оценки ответа после 2-4 циклов, контроль анализов крови, долгосрочное наблюдение.</p>
-    `
-  }
-]
+// Диагнозы доступные в базе
+const diagnosisIds = Object.keys(histoDatabase) as Array<keyof typeof histoDatabase>
 
 export function HistoHelper() {
-  const [selectedCase, setSelectedCase] = useState<string | null>(null)
-  const [apiKey, setApiKey] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState('')
+  const [selectedDiagnosisId, setSelectedDiagnosisId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState('overview')
 
-  const handleAnalyze = async (caseId: string) => {
-    const selectedCaseData = cases.find(c => c.id === caseId)
-    if (!selectedCaseData) return
+  const selectedDiagnosis = selectedDiagnosisId
+    ? histoDatabase[selectedDiagnosisId as keyof typeof histoDatabase]
+    : null
 
-    // Demo mode - show pre-calculated result
-    setSelectedCase(caseId)
-    setResult(selectedCaseData.result)
+  const getDiagnosisIcon = (id: string) => {
+    const icons: Record<string, string> = {
+      'gastric-adenocarcinoma-g2': '🔴',
+      'breast-cancer-luminal-a': '💗',
+      'colorectal-adenocarcinoma-stage2': '🔵',
+      'melanoma-intermediate-risk': '🖤',
+      'hodgkin-lymphoma-ns': '🟣',
+      'ovarian-cancer-hgsoc': '🟡'
+    }
+    return icons[id] || '🔬'
   }
 
-  const resetView = () => {
-    setSelectedCase(null)
-    setResult('')
-    setApiKey('')
+  if (selectedDiagnosis) {
+    return (
+      <div className="w-full space-y-6">
+        <Button
+          variant="outline"
+          onClick={() => {
+            setSelectedDiagnosisId(null)
+            setActiveTab('overview')
+          }}
+          className="mb-4"
+        >
+          ← Вернуться к диагнозам
+        </Button>
+
+        <Alert className="border-yellow-200 bg-yellow-50">
+          <AlertTriangle className="h-4 w-4 text-yellow-600" />
+          <AlertDescription className="text-yellow-800">
+            Этот инструмент носит ознакомительный характер. Окончательную интерпретацию даёт только врач-патологоанатом.
+          </AlertDescription>
+        </Alert>
+
+        <Card>
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-4xl mb-2">{getDiagnosisIcon(selectedDiagnosis.id)}</div>
+                <CardTitle className="text-2xl">{selectedDiagnosis.name}</CardTitle>
+                <CardDescription className="mt-2">
+                  {selectedDiagnosis.whoClassification}
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="pt-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-5 mb-6">
+                <TabsTrigger value="overview" className="text-xs sm:text-sm">
+                  📋 Обзор
+                </TabsTrigger>
+                <TabsTrigger value="ihc" className="text-xs sm:text-sm">
+                  🔬 ИГХ
+                </TabsTrigger>
+                <TabsTrigger value="molecular" className="text-xs sm:text-sm">
+                  🧬 Молекулярно
+                </TabsTrigger>
+                <TabsTrigger value="treatment" className="text-xs sm:text-sm">
+                  💊 Лечение
+                </TabsTrigger>
+                <TabsTrigger value="followup" className="text-xs sm:text-sm">
+                  📊 Follow-up
+                </TabsTrigger>
+              </TabsList>
+
+              {/* OVERVIEW TAB */}
+              <TabsContent value="overview" className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="bg-slate-50 p-3 rounded">
+                      <h4 className="font-semibold text-sm mb-1">Морфология</h4>
+                      <p className="text-sm text-slate-700">{selectedDiagnosis.morphology}</p>
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded">
+                      <h4 className="font-semibold text-sm mb-1">Грейд</h4>
+                      <p className="text-sm text-slate-700">{selectedDiagnosis.grading}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                      <h4 className="font-semibold text-sm text-blue-900 mb-1">Стадия TNM</h4>
+                      <p className="text-sm text-blue-800 font-mono">{selectedDiagnosis.tnmStaging.description}</p>
+                    </div>
+                    <div className="bg-green-50 p-3 rounded border border-green-200">
+                      <h4 className="font-semibold text-sm text-green-900 mb-1">Классификация</h4>
+                      <p className="text-sm text-green-800">{selectedDiagnosis.tnmStaging.stage}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded">
+                  <h4 className="font-semibold mb-2">Прогноз</h4>
+                  <p className="text-sm">{selectedDiagnosis.tnmStaging.prognosis}</p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold mb-3">Прогностические факторы</h4>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="bg-green-50 p-3 rounded">
+                      <p className="text-sm font-semibold text-green-900 mb-2">✓ Благоприятные</p>
+                      <ul className="text-sm space-y-1">
+                        {selectedDiagnosis.prognosticFactors.favorable.map((factor, i) => (
+                          <li key={i} className="text-green-800">• {factor}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="bg-red-50 p-3 rounded">
+                      <p className="text-sm font-semibold text-red-900 mb-2">✗ Неблагоприятные</p>
+                      <ul className="text-sm space-y-1">
+                        {selectedDiagnosis.prognosticFactors.unfavorable.slice(0, 5).map((factor, i) => (
+                          <li key={i} className="text-red-800">• {factor}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* IHC TAB */}
+              <TabsContent value="ihc" className="space-y-4">
+                <div className="bg-slate-50 p-4 rounded">
+                  <h4 className="font-semibold mb-2">Панель иммуногистохимии</h4>
+                  <p className="text-sm text-slate-600 mb-4">{selectedDiagnosis.immunohistochemistry.panel}</p>
+                  <div className="space-y-2">
+                    {selectedDiagnosis.immunohistochemistry.markers.map((marker, i) => (
+                      <div key={i} className="bg-white p-3 rounded border">
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="flex-1">
+                            <p className="font-mono font-semibold text-sm">{marker.name}</p>
+                            <p className="text-xs text-slate-600 mt-1">{marker.significance}</p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                              {marker.status}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* MOLECULAR TAB */}
+              <TabsContent value="molecular" className="space-y-4">
+                <div className="bg-slate-50 p-4 rounded">
+                  <h4 className="font-semibold mb-2">Методология</h4>
+                  <p className="text-sm text-slate-700 mb-4">{selectedDiagnosis.molecularMarkers.methodology}</p>
+                </div>
+
+                <div className="space-y-3">
+                  {selectedDiagnosis.molecularMarkers.markers.map((marker, i) => (
+                    <div key={i} className="bg-white p-4 rounded border border-purple-200">
+                      <div className="flex justify-between items-start gap-2 mb-2">
+                        <h4 className="font-semibold text-sm">{marker.name}</h4>
+                        <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
+                          {marker.protocol}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 mb-2">Статус: {marker.status}</p>
+                      <div className="bg-purple-50 p-2 rounded text-sm">
+                        <p className="font-semibold text-purple-900 mb-1">Терапевтическое значение:</p>
+                        <p className="text-purple-800">{marker.therapeuticImplication}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+
+              {/* TREATMENT TAB */}
+              <TabsContent value="treatment" className="space-y-4">
+                <div className="bg-white border-2 border-green-300 p-4 rounded">
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <Award className="w-5 h-5 text-green-600" />
+                    NCCN Протокол
+                  </h4>
+                  <p className="text-sm font-semibold text-green-800 mb-2">Предпочтительно:</p>
+                  <p className="text-sm mb-3">{selectedDiagnosis.treatmentProtocols.nccn.preferred}</p>
+                  <p className="text-sm font-semibold text-green-800 mb-2">Альтернативы:</p>
+                  <ul className="text-sm space-y-1 mb-3">
+                    {selectedDiagnosis.treatmentProtocols.nccn.alternatives.map((alt, i) => (
+                      <li key={i}>• {alt}</li>
+                    ))}
+                  </ul>
+                  <p className="text-xs text-slate-600">Источник: {selectedDiagnosis.treatmentProtocols.nccn.reference}</p>
+                </div>
+
+                <div className="bg-white border-2 border-blue-300 p-4 rounded">
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <Award className="w-5 h-5 text-blue-600" />
+                    ESMO Рекомендации
+                  </h4>
+                  <p className="text-sm font-semibold text-blue-800 mb-2">Предпочтительно:</p>
+                  <p className="text-sm mb-3">{selectedDiagnosis.treatmentProtocols.esmo.preferred}</p>
+                  <p className="text-sm font-semibold text-blue-800 mb-2">Альтернативы:</p>
+                  <ul className="text-sm space-y-1 mb-3">
+                    {selectedDiagnosis.treatmentProtocols.esmo.alternatives.map((alt, i) => (
+                      <li key={i}>• {alt}</li>
+                    ))}
+                  </ul>
+                  <p className="text-xs text-slate-600">Источник: {selectedDiagnosis.treatmentProtocols.esmo.reference}</p>
+                </div>
+
+                {selectedDiagnosis.treatmentProtocols.adjuvant && (
+                  <div className="bg-orange-50 border-l-4 border-orange-400 p-4 rounded">
+                    <h4 className="font-semibold text-orange-900 mb-2">Адъювантная терапия</h4>
+                    <p className="text-sm text-orange-800">{selectedDiagnosis.treatmentProtocols.adjuvant}</p>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* FOLLOWUP TAB */}
+              <TabsContent value="followup" className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded">
+                  <h4 className="font-semibold mb-2">Выживаемость</h4>
+                  <div className="grid md:grid-cols-3 gap-3 text-sm">
+                    <div className="bg-white p-3 rounded">
+                      <p className="font-semibold text-blue-900">5-летняя OS</p>
+                      <p className="text-lg font-bold text-blue-700">{selectedDiagnosis.survival.fiveYear}</p>
+                    </div>
+                    <div className="bg-white p-3 rounded">
+                      <p className="font-semibold text-blue-900">10-летняя OS</p>
+                      <p className="text-lg font-bold text-blue-700">{selectedDiagnosis.survival.tenYear}</p>
+                    </div>
+                    <div className="bg-white p-3 rounded">
+                      <p className="font-semibold text-blue-900">Медиана OS</p>
+                      <p className="text-lg font-bold text-blue-700">{selectedDiagnosis.survival.medianOS}</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 mt-3">Данные: {selectedDiagnosis.survival.basedOn}</p>
+                </div>
+
+                <div className="bg-white border-2 border-green-300 p-4 rounded">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-green-600" />
+                    План наблюдения
+                  </h4>
+                  <p className="text-sm leading-relaxed text-slate-700">{selectedDiagnosis.followUpProtocol}</p>
+                </div>
+
+                <div className="bg-slate-50 p-4 rounded">
+                  <h4 className="font-semibold mb-3">Следующие шаги</h4>
+                  <ol className="space-y-2">
+                    {selectedDiagnosis.nextSteps.map((step, i) => (
+                      <li key={i} className="text-sm flex gap-3">
+                        <span className="font-bold text-slate-400">{i + 1}.</span>
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+
+                <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded">
+                  <h4 className="font-semibold mb-2">Клинические замечания</h4>
+                  <p className="text-sm text-slate-700">{selectedDiagnosis.clinicalConsiderations}</p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+
+        <Button
+          variant="outline"
+          onClick={() => {
+            setSelectedDiagnosisId(null)
+            setActiveTab('overview')
+          }}
+          className="w-full"
+        >
+          ← Вернуться к диагнозам
+        </Button>
+      </div>
+    )
   }
 
   return (
     <div className="w-full space-y-6">
-      {!selectedCase ? (
-        <>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {cases.map((case_) => (
-              <Card
-                key={case_.id}
-                className="hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => handleAnalyze(case_.id)}
-              >
-                <CardHeader>
-                  <div className="text-4xl mb-2">{case_.icon}</div>
-                  <CardTitle className="line-clamp-2">{case_.name}</CardTitle>
-                  <CardDescription className="line-clamp-2">{case_.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full" onClick={() => handleAnalyze(case_.id)}>
-                    Расшифровать
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <Card className="bg-blue-50 border-blue-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                💡 Полная версия с AI
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-gray-700">
-                Для анализа собственных гистологических заключений вам нужен OpenAI API ключ.
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="password"
-                  placeholder="Введите OpenAI API ключ"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  className="flex-1 px-3 py-2 border rounded-md text-sm"
-                />
-                <Button variant="outline" size="sm">
-                  Сохранить
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {diagnosisIds.map((id) => {
+          const diagnosis = histoDatabase[id as keyof typeof histoDatabase]
+          return (
+            <Card
+              key={id}
+              className="hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => setSelectedDiagnosisId(id)}
+            >
+              <CardHeader>
+                <div className="text-4xl mb-2">{getDiagnosisIcon(id)}</div>
+                <CardTitle className="line-clamp-2">{diagnosis.name}</CardTitle>
+                <CardDescription className="line-clamp-2">{diagnosis.location}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button className="w-full" onClick={() => setSelectedDiagnosisId(id)}>
+                  Расшифровать →
                 </Button>
-              </div>
-              <p className="text-xs text-gray-600">
-                Ключ сохраняется только в вашем браузере и не отправляется никуда
-              </p>
-            </CardContent>
-          </Card>
-        </>
-      ) : (
-        <div className="space-y-4">
-          <Button variant="outline" onClick={resetView}>
-            ← Вернуться к примерам
-          </Button>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </div>
 
-          <Alert className="border-yellow-200 bg-yellow-50">
-            <AlertTriangle className="h-4 w-4 text-yellow-600" />
-            <AlertDescription className="text-yellow-800">
-              Этот инструмент носит ознакомительный характер. Окончательную интерпретацию результатов даёт только лечащий врач-патологоанатом или онколог.
-            </AlertDescription>
-          </Alert>
-
-          <Card>
-            <CardHeader className="bg-green-50 border-b">
-              <CardTitle className="text-green-900">✓ Расшифровка готова</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div
-                className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: result }}
-              />
-            </CardContent>
-          </Card>
-
-          <Button
-            onClick={resetView}
-            variant="outline"
-            className="w-full"
-          >
-            Вернуться к примерам
-          </Button>
-        </div>
-      )}
+      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Database className="w-5 h-5" />
+            📚 Информация о базе
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-slate-700">
+            <strong>✓ Диагнозы:</strong> {diagnosisIds.length} основных патологий согласно WHO классификации
+          </p>
+          <p className="text-sm text-slate-700">
+            <strong>✓ ИГХ маркеры:</strong> 60+ иммуногистохимических маркеров с интерпретацией
+          </p>
+          <p className="text-sm text-slate-700">
+            <strong>✓ Молекулярные тесты:</strong> BRAF, KRAS, HER2, ER/PR, BRCA, MSI, PD-L1, EBV и другие
+          </p>
+          <p className="text-sm text-slate-700">
+            <strong>✓ Протоколы лечения:</strong> NCCN, ESMO, ASCO, WHO рекомендации
+          </p>
+          <p className="text-sm text-slate-700">
+            <strong>✓ Классификации:</strong> TNM staging, G-grades (G1-G4), статистика выживаемости
+          </p>
+        </CardContent>
+      </Card>
     </div>
   )
 }
