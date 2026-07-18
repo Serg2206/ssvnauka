@@ -11,6 +11,7 @@ import { motion } from 'framer-motion'
 const navigation = [
   { name: 'Главная', href: '/', icon: Play },
   { name: 'Категории', href: '#categories', icon: BookOpen },
+  { name: 'Гистология', href: '/histo-helper', icon: BookOpen },
   { name: 'О платформе', href: '#about', icon: Users },
   { name: 'Контакты', href: '#contact', icon: Phone },
 ]
