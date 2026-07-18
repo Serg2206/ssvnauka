@@ -1,4 +1,5 @@
 import { HistoHelper } from '@/components/histo-helper/histo-helper'
+import { DonateWidget } from '@/components/histo-helper/donate-widget'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 
@@ -73,7 +74,7 @@ export default function HistoHelperPage() {
           </div>
 
           {/* Examples Grid */}
-          <div className="bg-white rounded-lg p-6 shadow">
+          <div className="bg-white rounded-lg p-6 shadow mb-12">
             <h3 className="text-2xl font-bold mb-4 text-slate-900">📋 Примеры диагнозов</h3>
             <p className="text-slate-600 mb-6">
               В инструменте содержатся примеры расшифровок для следующих патологий:
@@ -122,6 +123,11 @@ export default function HistoHelperPage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Donate Section */}
+          <div id="donate" className="mb-12">
+            <DonateWidget />
           </div>
         </div>
       </main>
