@@ -5,6 +5,7 @@ const nextConfig = {
   // GitHub Pages requires static export
   output: 'export',
   distDir: process.env.NEXT_DIST_DIR || 'out',
+  basePath: '/ssvnauka',
   eslint: {
     ignoreDuringBuilds: true,
   },
