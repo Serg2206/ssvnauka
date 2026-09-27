@@ -1,10 +1,9 @@
 name: CI build check
 
-# The live site ssvnauka.com (CNAME) is served from the static gh-pages branch.
-# The Next.js app on main uses Prisma/NextAuth and is deployed by Vercel, so it
-# cannot be published to GitHub Pages (there is no static export / out dir).
-# This workflow only verifies that main builds and never publishes anything,
-# so it cannot overwrite the live gh-pages site.
+# The Next.js app on main uses Prisma/NextAuth, so it cannot be published to
+# GitHub Pages (there is no static export / out dir). This workflow only verifies
+# that main builds and never publishes anything, so it cannot overwrite the
+# static site on the gh-pages branch. (ssvnauka.com itself is served by Vercel.)
 
 on:
   push:
