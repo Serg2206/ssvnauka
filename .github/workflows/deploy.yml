@@ -1,51 +1,37 @@
-name: Deploy to GitHub Pages
+name: CI build check
+
+# The live site ssvnauka.com (CNAME) is served from the static gh-pages branch.
+# The Next.js app on main uses Prisma/NextAuth and is deployed by Vercel, so it
+# cannot be published to GitHub Pages (there is no static export / out dir).
+# This workflow only verifies that main builds and never publishes anything,
+# so it cannot overwrite the live gh-pages site.
 
 on:
   push:
-    branches:
-      - main
-      - gh-pages
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Prisma client
+        run: npx prisma generate
+
       - name: Build
         run: npm run build
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './out'
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
